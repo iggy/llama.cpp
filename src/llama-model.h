@@ -778,6 +778,25 @@ protected:
 llama_model * llama_model_create(llm_arch arch, const llama_model_params & params);
 llama_model * llama_model_create(llama_model_loader & ml, const llama_model_params & params);
 
+// per-arch interface, one file in src/models implements it
+struct llm_arch_model_i {
+    const char * arch; // value of general.architecture in the GGUF
+
+    llama_model * (*create)(const llama_model_params & params);
+};
+
+// entry point of one model file, called by the registry in llama-model.cpp
+// note: name must match the file name in src/models, with '-' replaced by '_'
+#define LLAMA_MODEL_IMPL(name, arch_name, cls)                                            \
+    const llm_arch_model_i * llm_arch_model_ ## name();                                   \
+    static llama_model * llm_arch_model_new_ ## name(const llama_model_params & params) {  \
+        return new cls(params);                                                           \
+    }                                                                                     \
+    const llm_arch_model_i * llm_arch_model_ ## name() {                                  \
+        static const llm_arch_model_i i = { arch_name, llm_arch_model_new_ ## name };      \
+        return &i;                                                                        \
+    }
+
 // model must inherit from this
 struct llama_model_base : public llama_model {
     friend struct llama_model;

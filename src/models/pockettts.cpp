@@ -1,5 +1,19 @@
 #include "models.h"
 
+struct llama_model_pockettts : public llama_model_base {
+    llama_model_pockettts(const struct llama_model_params & params) : llama_model_base(params) {}
+    void load_arch_hparams(llama_model_loader & ml) override;
+    void load_arch_tensors(llama_model_loader & ml) override;
+
+    struct graph : public llm_graph_context {
+        graph(const llama_model & model, const llm_graph_params & params);
+    };
+
+    std::unique_ptr<llm_graph_context> build_arch_graph(const llm_graph_params & params) const override;
+};
+
+LLAMA_MODEL_IMPL(pockettts, "pockettts", llama_model_pockettts)
+
 // backbone of the pocket-tts CALM pipeline: the "text" side of a flow language model.
 // it has no lm_head, the audio latents are produced by the flow net inside the mmproj
 

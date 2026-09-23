@@ -1,4 +1,17 @@
 #include "models.h"
+#include "bert.h"
+
+struct llama_model_nomic_bert : public llama_model_base {
+    llama_model_nomic_bert(const struct llama_model_params & params) : llama_model_base(params) {}
+    void load_arch_hparams(llama_model_loader & ml) override;
+    void load_arch_tensors(llama_model_loader & ml) override;
+
+    using graph = llama_model_bert::graph;
+
+    std::unique_ptr<llm_graph_context> build_arch_graph(const llm_graph_params & params) const override;
+};
+
+LLAMA_MODEL_IMPL(nomic_bert, "nomic-bert", llama_model_nomic_bert)
 
 void llama_model_nomic_bert::load_arch_hparams(llama_model_loader & ml) {
     ml.get_key(LLM_KV_ATTENTION_LAYERNORM_EPS, hparams.f_norm_eps);

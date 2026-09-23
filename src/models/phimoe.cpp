@@ -1,4 +1,18 @@
 #include "models.h"
+#include "phi3.h"
+
+struct llama_model_phimoe : public llama_model_base {
+    llama_model_phimoe(const struct llama_model_params & params) : llama_model_base(params) {}
+    void load_arch_hparams(llama_model_loader & ml) override;
+    void load_arch_tensors(llama_model_loader & ml) override;
+
+    template <bool iswa>
+    using graph = llama_model_phi3::graph<iswa>;
+
+    std::unique_ptr<llm_graph_context> build_arch_graph(const llm_graph_params & params) const override;
+};
+
+LLAMA_MODEL_IMPL(phimoe, "phimoe", llama_model_phimoe)
 
 void llama_model_phimoe::load_arch_hparams(llama_model_loader & ml) {
     ml.get_key(LLM_KV_ATTENTION_LAYERNORM_RMS_EPS, hparams.f_norm_rms_eps);

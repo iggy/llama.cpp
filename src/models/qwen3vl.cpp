@@ -1,4 +1,7 @@
 #include "models.h"
+#include "qwen3vl.h"
+
+LLAMA_MODEL_IMPL(qwen3vl, "qwen3vl", llama_model_qwen3vl)
 
 void llama_model_qwen3vl::load_arch_hparams(llama_model_loader & ml) {
     ml.get_key(LLM_KV_NUM_DEEPSTACK_LAYERS, hparams.n_deepstack_layers, false);

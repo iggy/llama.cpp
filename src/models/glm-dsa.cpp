@@ -2,6 +2,24 @@
 
 #include "llama-kv-cache-dsa.h"
 
+struct llama_model_glm_dsa : public llama_model_base {
+    llama_model_glm_dsa(const struct llama_model_params & params) : llama_model_base(params) {}
+    void load_arch_hparams(llama_model_loader & ml) override;
+    void load_arch_tensors(llama_model_loader & ml) override;
+
+    struct graph : public llm_graph_context {
+        graph(const llama_model & model, const llm_graph_params & params);
+    };
+
+    struct graph_mtp : public llm_graph_context {
+        graph_mtp(const llama_model & model, const llm_graph_params & params);
+    };
+
+    std::unique_ptr<llm_graph_context> build_arch_graph(const llm_graph_params & params) const override;
+};
+
+LLAMA_MODEL_IMPL(glm_dsa, "glm-dsa", llama_model_glm_dsa)
+
 // https://huggingface.co/zai-org/GLM-5.2/blob/main/config.json#L26
 const std::array<uint32_t, LLAMA_MAX_LAYERS> GLM_5_2_DEFAULT_INDEXER_TYPES = {
     1, 1,

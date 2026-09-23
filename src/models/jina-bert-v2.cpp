@@ -1,4 +1,17 @@
 #include "models.h"
+#include "bert.h"
+
+struct llama_model_jina_bert_v2 : public llama_model_base {
+    llama_model_jina_bert_v2(const struct llama_model_params & params) : llama_model_base(params) {}
+    void load_arch_hparams(llama_model_loader & ml) override;
+    void load_arch_tensors(llama_model_loader & ml) override;
+
+    using graph = llama_model_bert::graph;
+
+    std::unique_ptr<llm_graph_context> build_arch_graph(const llm_graph_params & params) const override;
+};
+
+LLAMA_MODEL_IMPL(jina_bert_v2, "jina-bert-v2", llama_model_jina_bert_v2)
 
 void llama_model_jina_bert_v2::load_arch_hparams(llama_model_loader & ml) {
     ml.get_key(LLM_KV_ATTENTION_LAYERNORM_EPS,    hparams.f_norm_eps);

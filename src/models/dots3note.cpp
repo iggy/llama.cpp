@@ -3,6 +3,20 @@
 #include "llama-kv-cache.h"
 #include "llama-kv-cache-dsa.h"
 
+struct llama_model_dots3note : public llama_model_base {
+    llama_model_dots3note(const struct llama_model_params & params) : llama_model_base(params) {}
+    void load_arch_hparams(llama_model_loader & ml) override;
+    void load_arch_tensors(llama_model_loader & ml) override;
+
+    struct graph : public llm_graph_context {
+        graph(const llama_model & model, const llm_graph_params & params);
+    };
+
+    std::unique_ptr<llm_graph_context> build_arch_graph(const llm_graph_params & params) const override;
+};
+
+LLAMA_MODEL_IMPL(dots3note, "dots3note", llama_model_dots3note)
+
 // note: code adapted from deepseek32.cpp (DSA indexer + absorbed MLA) and step35.cpp (head-wise output gate)
 
 void llama_model_dots3note::load_arch_hparams(llama_model_loader & ml) {

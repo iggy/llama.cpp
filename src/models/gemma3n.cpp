@@ -1,5 +1,39 @@
 #include "models.h"
 
+struct llama_model_gemma3n : public llama_model_base {
+    llama_model_gemma3n(const struct llama_model_params & params) : llama_model_base(params) {}
+    void load_arch_hparams(llama_model_loader & ml) override;
+    void load_arch_tensors(llama_model_loader & ml) override;
+
+    struct graph : public llm_graph_context {
+        const llama_model & model;
+
+        const int64_t n_embd_head;
+        const int64_t n_embd_altup;
+        const int64_t n_altup;
+        const int     i_altup_act;
+        const int     n_layer_sparsity = 10; // number of layers using activation sparsity
+        const float   f_sparsity_std_mul = 1.6448533535003662f; // std_multiplier = normal_dist.icdf(0.95)
+
+        graph(const llama_model & model, const llm_graph_params & params);
+        ggml_tensor * calc_magnitude(ggml_tensor * x);
+
+        // TODO: refactor in common "per-layer" functionality [TAG_PER_LAYER]
+        ggml_tensor * build_inp_per_layer();
+        ggml_tensor * project_per_layer_inputs(ggml_tensor * inp_batch, ggml_tensor * inp_per_layer);
+
+        ggml_tensor * gaussian_topk(ggml_tensor * x);
+        ggml_tensor * altup_compute_router_modalities(ggml_tensor * x, int il);
+        ggml_tensor * altup_predict(ggml_tensor * cur, int il);
+        ggml_tensor * laurel(ggml_tensor * cur, int il);
+        ggml_tensor * altup_correct(ggml_tensor * predictions, ggml_tensor * activated, int il);
+    };
+
+    std::unique_ptr<llm_graph_context> build_arch_graph(const llm_graph_params & params) const override;
+};
+
+LLAMA_MODEL_IMPL(gemma3n, "gemma3n", llama_model_gemma3n)
+
 void llama_model_gemma3n::load_arch_hparams(llama_model_loader & ml) {
     uint32_t swa_period = 5;
     ml.get_key_or_arr(LLM_KV_ATTENTION_SLIDING_WINDOW_PATTERN, swa_period, false);

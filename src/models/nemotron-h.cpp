@@ -1,6 +1,9 @@
 #include "models.h"
+#include "nemotron-h.h"
 
 #include <algorithm> // std::max
+
+LLAMA_MODEL_IMPL(nemotron_h, "nemotron_h", llama_model_nemotron_h)
 
 void llama_model_nemotron_h::load_arch_hparams(llama_model_loader & ml) {
     ml.get_key(LLM_KV_SSM_CONV_KERNEL,    hparams.ssm_d_conv);

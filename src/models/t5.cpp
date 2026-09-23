@@ -1,4 +1,7 @@
 #include "models.h"
+#include "t5.h"
+
+LLAMA_MODEL_IMPL(t5, "t5", llama_model_t5)
 
 void llama_model_t5::load_arch_hparams(llama_model_loader & ml) {
     ml.get_key(LLM_KV_ATTENTION_LAYERNORM_RMS_EPS,      hparams.f_norm_rms_eps);

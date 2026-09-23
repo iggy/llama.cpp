@@ -1,4 +1,7 @@
 #include "models.h"
+#include "ernie4-5.h"
+
+LLAMA_MODEL_IMPL(ernie4_5, "ernie4_5", llama_model_ernie4_5)
 
 void llama_model_ernie4_5::load_arch_hparams(llama_model_loader & ml) {
     // paddleocr need mrope_section

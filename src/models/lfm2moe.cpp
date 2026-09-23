@@ -1,6 +1,20 @@
 #include "models.h"
+#include "lfm2.h"
 #include "../llama-memory-hybrid-iswa.h"
 #include "../llama-memory-hybrid.h"
+
+struct llama_model_lfm2moe : public llama_model_base {
+    llama_model_lfm2moe(const struct llama_model_params & params) : llama_model_base(params) {}
+    void load_arch_hparams(llama_model_loader & ml) override;
+    void load_arch_tensors(llama_model_loader & ml) override;
+
+    template <bool iswa>
+    using graph = llama_model_lfm2::graph<iswa>;
+
+    std::unique_ptr<llm_graph_context> build_arch_graph(const llm_graph_params & params) const override;
+};
+
+LLAMA_MODEL_IMPL(lfm2moe, "lfm2moe", llama_model_lfm2moe)
 
 void llama_model_lfm2moe::load_arch_hparams(llama_model_loader & ml) {
     ml.get_key(LLM_KV_SHORTCONV_L_CACHE,           hparams.n_shortconv_l_cache);

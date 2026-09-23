@@ -8,6 +8,17 @@ llama_add_compile_flags()
 
 file(GLOB LLAMA_MODELS_SOURCES "models/*.cpp")
 
+# every models/*.cpp defines one arch, except the shared bases
+set(LLAMA_MODELS_LIST "")
+foreach (model_src ${LLAMA_MODELS_SOURCES})
+    get_filename_component(model_name ${model_src} NAME_WE)
+    if (NOT model_name MATCHES "-base$")
+        string(REPLACE "-" "_" model_name ${model_name})
+        string(APPEND LLAMA_MODELS_LIST "LLAMA_MODEL(${model_name})\n")
+    endif()
+endforeach()
+configure_file(models-list.h.in ${CMAKE_CURRENT_BINARY_DIR}/models-list.h @ONLY)
+
 add_library(llama
             ../include/llama.h
             llama.cpp

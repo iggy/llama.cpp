@@ -1,6 +1,20 @@
 #include "models.h"
 #include <float.h>
 
+struct llama_model_chameleon : public llama_model_base {
+    llama_model_chameleon(const struct llama_model_params & params) : llama_model_base(params) {}
+    void load_arch_hparams(llama_model_loader & ml) override;
+    void load_arch_tensors(llama_model_loader & ml) override;
+
+    struct graph : public llm_graph_context {
+        graph(const llama_model & model, const llm_graph_params & params);
+    };
+
+    std::unique_ptr<llm_graph_context> build_arch_graph(const llm_graph_params & params) const override;
+};
+
+LLAMA_MODEL_IMPL(chameleon, "chameleon", llama_model_chameleon)
+
 void llama_model_chameleon::load_arch_hparams(llama_model_loader & ml) {
     ml.get_key(LLM_KV_ATTENTION_LAYERNORM_RMS_EPS, hparams.f_norm_rms_eps);
     hparams.f_norm_eps = 1e-5;  // eps for qk-norm, torch default

@@ -1,8 +1,11 @@
 #include "models.h"
+#include "lfm2.h"
 #include "../llama-memory-hybrid-iswa.h"
 #include "../llama-memory-hybrid.h"
 
 #include <algorithm>
+
+LLAMA_MODEL_IMPL(lfm2, "lfm2", llama_model_lfm2)
 
 void llama_model_lfm2::load_arch_hparams(llama_model_loader & ml) {
     ml.get_key(LLM_KV_SHORTCONV_L_CACHE,           hparams.n_shortconv_l_cache);

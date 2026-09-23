@@ -1,4 +1,7 @@
 #include "models.h"
+#include "llama.h"
+
+LLAMA_MODEL_IMPL(llama, "llama", llama_model_llama)
 
 void llama_model_llama::load_arch_hparams(llama_model_loader & ml) {
     uint32_t n_vocab = 0;

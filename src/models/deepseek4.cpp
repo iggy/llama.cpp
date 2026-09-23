@@ -1,5 +1,6 @@
 #include "llama-hparams.h"
 #include "models.h"
+#include "deepseek4.h"
 
 #include "llama-kv-cache-dsv4.h"
 
@@ -7,6 +8,8 @@
 #include <cmath>
 #include <stdexcept>
 #include <string>
+
+LLAMA_MODEL_IMPL(deepseek4, "deepseek4", llama_model_deepseek4)
 
 static float dsv4_rope_attn_factor(float freq_scale, float ext_factor) {
     if (ext_factor == 0.0f) {

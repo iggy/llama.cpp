@@ -1,4 +1,7 @@
 #include "models.h"
+#include "deepseek2.h"
+
+LLAMA_MODEL_IMPL(deepseek2, "deepseek2", llama_model_deepseek2)
 
 void llama_model_deepseek2::load_arch_hparams(llama_model_loader & ml) {
     uint32_t n_vocab = 0;

@@ -1,4 +1,17 @@
 #include "models.h"
+#include "granite.h"
+
+struct llama_model_minicpm : public llama_model_base {
+    llama_model_minicpm(const struct llama_model_params & params) : llama_model_base(params) {}
+    void load_arch_hparams(llama_model_loader & ml) override;
+    void load_arch_tensors(llama_model_loader & ml) override;
+
+    using graph = llama_model_granite::graph;
+
+    std::unique_ptr<llm_graph_context> build_arch_graph(const llm_graph_params & params) const override;
+};
+
+LLAMA_MODEL_IMPL(minicpm, "minicpm", llama_model_minicpm)
 
 void llama_model_minicpm::load_arch_hparams(llama_model_loader & ml) {
     // Backward-compatible defaults for older MiniCPM GGUFs

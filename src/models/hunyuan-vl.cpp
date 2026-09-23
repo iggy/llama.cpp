@@ -1,4 +1,7 @@
 #include "models.h"
+#include "hunyuan-vl.h"
+
+LLAMA_MODEL_IMPL(hunyuan_vl, "hunyuan_vl", llama_model_hunyuan_vl)
 
 void llama_model_hunyuan_vl::load_arch_hparams(llama_model_loader & ml) {
     ml.get_key(LLM_KV_ATTENTION_LAYERNORM_RMS_EPS, hparams.f_norm_rms_eps);

@@ -1,4 +1,17 @@
 #include "models.h"
+#include "deepseek2.h"
+
+struct llama_model_deepseek2ocr : public llama_model_base {
+    llama_model_deepseek2ocr(const struct llama_model_params & params) : llama_model_base(params) {}
+    void load_arch_hparams(llama_model_loader & ml) override;
+    void load_arch_tensors(llama_model_loader & ml) override;
+
+    using graph = llama_model_deepseek2::graph;
+
+    std::unique_ptr<llm_graph_context> build_arch_graph(const llm_graph_params & params) const override;
+};
+
+LLAMA_MODEL_IMPL(deepseek2ocr, "deepseek2-ocr", llama_model_deepseek2ocr)
 
 void llama_model_deepseek2ocr::load_arch_hparams(llama_model_loader & ml) {
     // similar to deepseek2, but without MLA

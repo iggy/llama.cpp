@@ -1,4 +1,7 @@
 #include "models.h"
+#include "bert.h"
+
+LLAMA_MODEL_IMPL(bert, "bert", llama_model_bert)
 
 void llama_model_bert::load_arch_hparams(llama_model_loader & ml) {
     ml.get_key(LLM_KV_ATTENTION_LAYERNORM_EPS, hparams.f_norm_eps);

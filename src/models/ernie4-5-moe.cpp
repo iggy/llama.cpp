@@ -1,4 +1,18 @@
 #include "models.h"
+#include "ernie4-5.h"
+
+struct llama_model_ernie4_5_moe : public llama_model_ernie4_5 {
+    llama_model_ernie4_5_moe(const struct llama_model_params & params) : llama_model_ernie4_5(params) {}
+    // reuse load_arch_hparams and load_arch_tensors from llama_model_ernie4_5
+
+    struct graph : public llm_graph_context {
+        graph(const llama_model & model, const llm_graph_params & params);
+    };
+
+    std::unique_ptr<llm_graph_context> build_arch_graph(const llm_graph_params & params) const override;
+};
+
+LLAMA_MODEL_IMPL(ernie4_5_moe, "ernie4_5-moe", llama_model_ernie4_5_moe)
 
 std::unique_ptr<llm_graph_context> llama_model_ernie4_5_moe::build_arch_graph(const llm_graph_params & params) const {
     return std::make_unique<graph>(*this, params);

@@ -1,4 +1,20 @@
 #include "models.h"
+#include "nemotron-h.h"
+
+struct llama_model_nemotron_h_moe : public llama_model_nemotron_h {
+    llama_model_nemotron_h_moe(const struct llama_model_params & params) : llama_model_nemotron_h(params) {}
+    // reuse load_arch_hparams and load_arch_tensors from llama_model_nemotron_h
+
+    using graph = llama_model_nemotron_h::graph;
+
+    struct graph_mtp : public llm_graph_context {
+        graph_mtp(const llama_model & model, const llm_graph_params & params);
+    };
+
+    std::unique_ptr<llm_graph_context> build_arch_graph(const llm_graph_params & params) const override;
+};
+
+LLAMA_MODEL_IMPL(nemotron_h_moe, "nemotron_h_moe", llama_model_nemotron_h_moe)
 
 std::unique_ptr<llm_graph_context> llama_model_nemotron_h_moe::build_arch_graph(const llm_graph_params & params) const {
     if (params.gtype == LLM_GRAPH_TYPE_DECODER_MTP) {

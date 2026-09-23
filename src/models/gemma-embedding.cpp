@@ -1,5 +1,19 @@
 #include "models.h"
 
+struct llama_model_gemma_embedding : public llama_model_base {
+    llama_model_gemma_embedding(const struct llama_model_params & params) : llama_model_base(params) {}
+    void load_arch_hparams(llama_model_loader & ml) override;
+    void load_arch_tensors(llama_model_loader & ml) override;
+
+    struct graph : public llm_graph_context {
+        graph(const llama_model & model, const llm_graph_params & params);
+    };
+
+    std::unique_ptr<llm_graph_context> build_arch_graph(const llm_graph_params & params) const override;
+};
+
+LLAMA_MODEL_IMPL(gemma_embedding, "gemma-embedding", llama_model_gemma_embedding)
+
 void llama_model_gemma_embedding::load_arch_hparams(llama_model_loader & ml) {
     hparams.swa_type = LLAMA_SWA_TYPE_SYMMETRIC;
     uint32_t swa_period = 6;
